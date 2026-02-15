@@ -4,7 +4,6 @@ const OK_RANGE = 5;   // 80±5 を「良い感じ」とする
 const STORAGE_KEY = "shitsumon1_training_v1"; // アプリ用保存キー
 
 // ========= データ（問題） =========
-// theme はユーザーの指定フォーマットに合わせる
 const RAW_TEXT = `【30歳営業・成績低迷・異動打診・家族は応援・本人は営業を続けたい】
 営業職として勤務する中、成績低迷により異動の打診を受けた。
 営業を続けたい思いがある一方で成績低迷という現実を踏まえ異動も検討すべきか迷い、
@@ -110,10 +109,12 @@ const items = parseItems(RAW_TEXT);
 // ========= 状態 =========
 let index = 0;
 let isModelVisible = false;
+let isMyAnswerVisible = true;
 
 // ========= DOM =========
 const themeEl   = document.getElementById("theme");
 const answerEl  = document.getElementById("answer");
+const myCardEl  = document.getElementById("myCard");
 const myAnswerEl= document.getElementById("myAnswer");
 const counterEl = document.getElementById("counter");
 const prevBtn   = document.getElementById("prevBtn");
@@ -121,7 +122,7 @@ const nextBtn   = document.getElementById("nextBtn");
 const metaEl    = document.getElementById("meta");
 const clearBtn  = document.getElementById("clearBtn");
 const copyBtn   = document.getElementById("copyBtn");
-const toggleBtn = document.getElementById("toggleBtn");
+const toggleModelBtn = document.getElementById("toggleModelBtn");
 
 // ========= 保存/復元 =========
 function loadState() {
@@ -156,8 +157,7 @@ function setSavedAnswer(i, text) {
 
 // ========= 文字数カウント =========
 function countChars(text) {
-  // 全角/半角問わず「文字数」でカウント（改行も1文字として扱う）
-  return text.length;
+  return text.length; // 改行も1文字としてカウント
 }
 
 function updateCounter() {
@@ -165,12 +165,12 @@ function updateCounter() {
   counterEl.textContent = `${n} 文字（目標 ${TARGET}）`;
 
   counterEl.classList.remove("ok", "warn");
-
   const diff = n - TARGET;
+
   if (Math.abs(diff) <= OK_RANGE) {
-    counterEl.classList.add("ok");   // ちょうど良い
+    counterEl.classList.add("ok");
   } else if (n > TARGET) {
-    counterEl.classList.add("warn"); // 超過
+    counterEl.classList.add("warn");
   }
 }
 
@@ -180,9 +180,13 @@ function render() {
 
   themeEl.textContent = item.theme;
 
+  // あなたの回答カード表示/非表示（テーマタップで切替）
+  myCardEl.style.display = isMyAnswerVisible ? "block" : "none";
+  themeEl.setAttribute("aria-expanded", String(isMyAnswerVisible));
+
+  // 模範表示/非表示（ボタンで切替）
   answerEl.textContent = item.answer;
   answerEl.style.display = isModelVisible ? "block" : "none";
-  themeEl.setAttribute("aria-expanded", String(isModelVisible));
 
   metaEl.textContent = `${index + 1} / ${items.length}`;
 
@@ -194,6 +198,12 @@ function render() {
   updateCounter();
 }
 
+// ========= トグル =========
+function toggleMyAnswer() {
+  isMyAnswerVisible = !isMyAnswerVisible;
+  render();
+}
+
 function toggleModel() {
   isModelVisible = !isModelVisible;
   render();
@@ -203,10 +213,13 @@ function toggleModel() {
 function goPrev() {
   if (index === 0) return;
   index--;
-  isModelVisible = false; // 移動時は模範を閉じる
+  isModelVisible = false;
+  isMyAnswerVisible = true;
+
   const state = loadState();
   state.index = index;
   saveState(state);
+
   render();
 }
 
@@ -214,9 +227,12 @@ function goNext() {
   if (index === items.length - 1) return;
   index++;
   isModelVisible = false;
+  isMyAnswerVisible = true;
+
   const state = loadState();
   state.index = index;
   saveState(state);
+
   render();
 }
 
@@ -232,9 +248,7 @@ async function copyMyAnswer() {
   if (!text) return;
   try {
     await navigator.clipboard.writeText(text);
-    // UIはシンプルに（通知は入れずにOK）
   } catch {
-    // クリップボードが使えない環境向けフォールバック
     myAnswerEl.select();
     document.execCommand("copy");
     myAnswerEl.setSelectionRange(myAnswerEl.value.length, myAnswerEl.value.length);
@@ -242,35 +256,41 @@ async function copyMyAnswer() {
 }
 
 // ========= イベント =========
-themeEl.addEventListener("click", toggleModel);
+// テーマ：あなたの回答を表示/非表示（誤タップ防止）
+themeEl.addEventListener("click", toggleMyAnswer);
 themeEl.addEventListener("keydown", (e) => {
   if (e.key === "Enter" || e.key === " ") {
     e.preventDefault();
-    toggleModel();
+    toggleMyAnswer();
   }
 });
-toggleBtn.addEventListener("click", toggleModel);
 
+// 模範ボタン
+toggleModelBtn.addEventListener("click", toggleModel);
+
+// 前/次
 prevBtn.addEventListener("click", goPrev);
 nextBtn.addEventListener("click", goNext);
 
+// 入力
 myAnswerEl.addEventListener("input", () => {
   setSavedAnswer(index, myAnswerEl.value);
   updateCounter();
 });
 
+// クリア/コピー
 clearBtn.addEventListener("click", clearMyAnswer);
 copyBtn.addEventListener("click", copyMyAnswer);
 
-// PC操作：←/→で移動、Aで模範トグル
+// PC操作：←/→で移動、T=回答トグル、M=模範トグル
 document.addEventListener("keydown", (e) => {
-  // 入力中は矢印移動を邪魔しない
   const active = document.activeElement;
   const isTyping = active === myAnswerEl;
 
   if (!isTyping && e.key === "ArrowLeft") goPrev();
   if (!isTyping && e.key === "ArrowRight") goNext();
-  if (!isTyping && e.key.toLowerCase() === "a") toggleModel();
+  if (!isTyping && e.key.toLowerCase() === "t") toggleMyAnswer();
+  if (!isTyping && e.key.toLowerCase() === "m") toggleModel();
 });
 
 // 初期ロード：前回の続きから
@@ -281,4 +301,3 @@ document.addEventListener("keydown", (e) => {
   }
   render();
 })();
-
