@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>設問1トレーニング</title>
+  <title>論述トレーニング</title>
   <style>
     body { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; margin: 0; }
     .wrap { max-width: 860px; margin: 0 auto; padding: 16px; }
@@ -68,7 +68,13 @@
     .toolbtn {
       padding: 10px 12px; border-radius: 12px; border: 1px solid #ddd;
       background: #fff; cursor: pointer; font-size: 14px;
-    }
+	.below{
+	　display:flex;
+	　gap:12px;
+	　align-items:center;
+	　justify-content:space-between;
+	　margin-top:10px;
+　   }
   </style>
 </head>
 <body>
@@ -84,10 +90,9 @@
         <div class="col">
           <label for="myAnswer">あなたの回答（2行想定）</label>
           <textarea id="myAnswer" placeholder="【現状】＋【出来事】により、&#10;【葛藤A】と【葛藤B】の間で揺れ、今後どのようにすればよいか悩んでいる。"></textarea>
-          <div class="subhint">※改行は自由。問題ごとに自動保存されます。</div>
-        </div>
-        <div>
-          <div id="counter" class="counter">0 文字（目標 80）</div>
+        <div class="below">
+			<div class="subhint">※改行は自由。問題ごとに自動保存されます。</div>
+            <div id="counter" class="counter">0 文字（目標 80）</div>
         </div>
       </div>
 
