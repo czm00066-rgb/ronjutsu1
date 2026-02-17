@@ -1,0 +1,9 @@
+{
+  "name": "設問1トレーニング",
+  "short_name": "S1 Trainer",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b0f17",
+  "theme_color": "#0b0f17",
+  "icons": []
+}

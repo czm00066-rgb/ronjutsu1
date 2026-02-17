@@ -64,10 +64,10 @@ const RAW_TEXT = `【30歳営業・成績低迷・異動打診・家族は応援
 特に不満はない現状を続けるか、新たな可能性を求めて転職に踏み出すかの間で葛藤し、
 今後どのようにすればよいか悩んでいる。
 ---
-【35歳男性・管理職昇進・部下育成が低迷・自信喪失・プレイヤーに戻りたい・会社は期待】
-管理職に昇進したが部下育成がうまくいかず自信を失ってきた。
-プレイヤーに戻りたい思いと、管理職として期待に応えたい思いの間で葛藤し、
-今後どのようにすればよいか悩んでいる。
+【35歳男性・管理職昇進・部下育成が低迷・会社は期待】
+管理職に昇進したが部下育成がうまくいかず自信を失い、
+プレイヤーに戻りたい思いと管理職として期待に応えたい思いの間で葛藤し、
+今後どうすべきか悩んでいる。
 ---
 【28歳女性・広告会社勤務・結婚を機に地方異動可能性】
 広告会社に勤務しやりがいを感じているが、結婚に伴う地方転居の可能性から今の仕事を続けられるか不安を抱き、
@@ -119,7 +119,8 @@ const myAnswerEl= document.getElementById("myAnswer");
 const counterEl = document.getElementById("counter");
 const prevBtn   = document.getElementById("prevBtn");
 const nextBtn   = document.getElementById("nextBtn");
-const metaEl    = document.getElementById("meta");
+const metaEl    = document.getElementById("meta"); // may be null in dark UI
+const metaTopEl = document.getElementById("metaTop");
 const clearBtn  = document.getElementById("clearBtn");
 const copyBtn   = document.getElementById("copyBtn");
 const toggleModelBtn = document.getElementById("toggleModelBtn");
@@ -187,8 +188,11 @@ function render() {
   // 模範表示/非表示（ボタンで切替）
   answerEl.textContent = item.answer;
   answerEl.style.display = isModelVisible ? "block" : "none";
+  toggleModelBtn.textContent = isModelVisible ? "模範をクリア" : "模範を表示";
 
-  metaEl.textContent = `${index + 1} / ${items.length}`;
+  if (metaEl) metaEl.textContent = `${index + 1} / ${items.length}`;
+  if (metaTopEl) metaTopEl.textContent = `${index + 1} / ${items.length}`;
+  if (metaTopEl) metaTopEl.textContent = `${index + 1} / ${items.length}`;
 
   prevBtn.disabled = index === 0;
   nextBtn.disabled = index === items.length - 1;
