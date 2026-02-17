@@ -194,8 +194,8 @@ function render() {
   if (metaTopEl) metaTopEl.textContent = `S1-${index + 1}/${items.length}`;
   if (metaTopEl) metaTopEl.textContent = `S1-${index + 1}/${items.length}`;
 
-  prevBtn.disabled = index === 0;
-  nextBtn.disabled = index === items.length - 1;
+  prevBtn.disabled = false;
+  nextBtn.disabled = false;
 
   // 回答復元
   myAnswerEl.value = getSavedAnswer(index);
