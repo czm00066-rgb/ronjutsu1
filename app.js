@@ -191,8 +191,8 @@ function render() {
   toggleModelBtn.textContent = isModelVisible ? "模範をクリア" : "模範を表示";
 
   if (metaEl) metaEl.textContent = `${index + 1} / ${items.length}`;
-  if (metaTopEl) metaTopEl.textContent = `${index + 1} / ${items.length}`;
-  if (metaTopEl) metaTopEl.textContent = `${index + 1} / ${items.length}`;
+  if (metaTopEl) metaTopEl.textContent = `S1-${index + 1}/${items.length}`;
+  if (metaTopEl) metaTopEl.textContent = `S1-${index + 1}/${items.length}`;
 
   prevBtn.disabled = index === 0;
   nextBtn.disabled = index === items.length - 1;
