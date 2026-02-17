@@ -215,8 +215,7 @@ function toggleModel() {
 
 // ========= ナビ =========
 function goPrev() {
-  if (index === 0) return;
-  index--;
+  index = (index - 1 + items.length) % items.length;
   isModelVisible = false;
   isMyAnswerVisible = true;
 
@@ -228,8 +227,7 @@ function goPrev() {
 }
 
 function goNext() {
-  if (index === items.length - 1) return;
-  index++;
+  index = (index + 1) % items.length;
   isModelVisible = false;
   isMyAnswerVisible = true;
 
